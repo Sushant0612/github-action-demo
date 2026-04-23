@@ -1,0 +1,29 @@
+name: Generate TXT File Every 5 Minutes
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # every 5 minutes (GitHub minimum)
+  workflow_dispatch:          # also run manually anytime
+
+jobs:
+  generate-file:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Generate the TXT file
+        run: python generate_file.py
+
+      - name: Upload generated file as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-log-${{ github.run_number }}
+          path: outputs/
+          retention-days: 7   # files are kept for 7 days then auto-deleted
